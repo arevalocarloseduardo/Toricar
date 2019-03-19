@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:toricar/2SelectMode.dart';
+import 'package:toricar/auth.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -17,7 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
         Duration(seconds: 3),
         () => Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => SelectMode()),
+              MaterialPageRoute(builder: (context) => SelectMode(auth: Auth())),
             ));
   }
 

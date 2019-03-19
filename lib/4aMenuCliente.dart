@@ -5,30 +5,54 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:toricar/auth.dart';
+import 'package:toricar/authProvider.dart';
 
 class MenuCliente extends StatefulWidget {
+  const MenuCliente({this.onSignedOut,this.auth});
+  final VoidCallback onSignedOut;
+   final BaseAuth auth;
+  
+  Future<void> _signOut(BuildContext context) async {
+    try {
+      final BaseAuth auth = AuthProvider.of(context).auth;
+      await auth.signOut();
+      onSignedOut();
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   _MenuClienteState createState() => _MenuClienteState();
 }
 
 class _MenuClienteState extends State<MenuCliente> {
   Completer<GoogleMapController> _controller = Completer();
+  
+
+  
 //iniicializo Variable
+
   String id;
   String name="hola";
   Marker laPlata;
   Location location = Location();
   final db = Firestore.instance;
-  FirebaseUser user;
 //inicializo variable para guardar map
+
   var latitude;
   var longitude;
   var email;
-
   @override
   void initState() {
     super.initState();
-    email=user.email;
+    widget.auth.email().then((userId) {
+      setState(() {
+        email = userId;
+      });
+    });
+    
     //metodo para cuando haya un cambio en la ubicacion actualiza currentLocation
     location.onLocationChanged().listen((LocationData value) {
       setState(() {
@@ -98,9 +122,9 @@ class _MenuClienteState extends State<MenuCliente> {
       ),
     );
   }
-
-  void _addMarker() async {
-    DocumentReference ref = await db.collection('posicion_inicial').add({'latitud':'$name ','longitud':'$name ','cliente':'${email} '});
+ void _addMarker() async {
+   var correos = email;
+       DocumentReference ref = await db.collection('posicion_inicial').add({'latitud':'$name ','longitud':'$name ','cliente':'$correos'});
     setState(() {
      id=ref.documentID;
      print(ref.documentID);

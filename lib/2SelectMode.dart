@@ -10,16 +10,13 @@ import '4aMenuCliente.dart';
 class SelectMode extends StatefulWidget {
   SelectMode({this.auth});
   final BaseAuth auth;
- 
+  
+
   @override
   _SelectModeState createState() => _SelectModeState();
 }
 
-enum AuthStatus{
-  notDetermined,
-  notSignedIn,
-  signedIn
-}
+enum AuthStatus { notDetermined, notSignedIn, signedIn }
 
 class _SelectModeState extends State<SelectMode> {
   AuthStatus authStatus = AuthStatus.notDetermined;
@@ -27,62 +24,40 @@ class _SelectModeState extends State<SelectMode> {
   @override
   initState() {
     super.initState();
-    widget.auth.currentUser().then((userId){
-      setState((){
-        authStatus = userId==null? AuthStatus.notSignedIn:AuthStatus.signedIn;
+    
+    widget.auth.currentUser().then((userId) {
+      setState(() {
+        authStatus =
+            userId == null ? AuthStatus.notSignedIn : AuthStatus.signedIn;
       });
     });
   }
 
   @override
-  void didChangeDependecies() {    
+  void didChangeDependecies() {
     super.didChangeDependencies();
-    final  BaseAuth auth = AuthProvider.of(context).auth;
+    final BaseAuth auth = AuthProvider.of(context).auth;
     auth.currentUser().then((String userId) {
       setState(() {
-        authStatus = userId == null ? AuthStatus.notSignedIn : AuthStatus.signedIn;
+        authStatus =
+            userId == null ? AuthStatus.notSignedIn : AuthStatus.signedIn;
         print(userId);
       });
     });
   }
-  void _signedIn(){
+
+  void _signedIn() {
     setState(() {
-     authStatus = AuthStatus.signedIn;
+      authStatus = AuthStatus.signedIn;
     });
   }
+
   void _signedOut() {
     setState(() {
       authStatus = AuthStatus.notSignedIn;
     });
   }
-   @override
-  Widget build(BuildContext context) {
-    switch (authStatus) {
-      case AuthStatus.notDetermined:
-        return _buildWaitingScreen();
-      case AuthStatus.notSignedIn:
-        return LoginCliente(
-          auth: widget.auth,
-          onSignedIn: _signedIn,
-        );
-      case AuthStatus.signedIn:
-        return HomePage(
-          onSignedOut: _signedOut,
-        );
-    }
-    return null;
-  }
 
-  Widget _buildWaitingScreen() {
-    return Scaffold(
-      body: Container(
-        alignment: Alignment.center,
-        child: CircularProgressIndicator(),
-      ),
-    );
-  }
-}
-  /*
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -117,7 +92,11 @@ class _SelectModeState extends State<SelectMode> {
               color: Colors.lightBlue[400],
               onPressed: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => authStatus == AuthStatus.notSignedIn ? LoginRemis() : MenuRemis()),
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            authStatus == AuthStatus.notSignedIn
+                                ? LoginRemis()
+                                : MenuRemis()),
                   ),
             ),
           ),
@@ -148,13 +127,26 @@ class _SelectModeState extends State<SelectMode> {
               color: Colors.greenAccent,
               onPressed: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => authStatus == AuthStatus.notSignedIn ? LoginCliente(
-                      onSignedIn: _signedIn,
-                    ) : MenuCliente()),
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            authStatus == AuthStatus.notSignedIn
+                                ? LoginCliente(
+                                    onSignedIn: _signedIn,
+                                  )
+                                : MenuCliente(onSignedOut: _signedOut,auth: Auth()))
                   ),
             ),
           )
         ],
+      ),
+    );
+  }
+
+  Widget _buildWaitingScreen() {
+    return Scaffold(
+      body: Container(
+        alignment: Alignment.center,
+        child: CircularProgressIndicator(),
       ),
     );
   }
@@ -168,4 +160,3 @@ class _SelectModeState extends State<SelectMode> {
             end: Alignment(-1.0, -1.0),
           )));
 }
-*/
