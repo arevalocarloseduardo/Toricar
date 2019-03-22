@@ -10,12 +10,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
       return MaterialApp(
-        title: 'Flutter login demo',
+        debugShowCheckedModeBanner: false,
+        title: 'Toricar',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: SplashScreen(),
-     
+        home: SplashScreen(),     
     );
   }
 }

@@ -51,12 +51,15 @@ class _LoginClienteState extends State<LoginCliente> {
         if (_formType == FormType.login) {
           final String userId = await widget.auth.signInWithEmailAndPassword(_email, _password);
           print('Signed in: $userId');
+          Navigator.of(context).pushReplacement(
+                        CupertinoPageRoute(builder: (context) => MenuCliente()));
         } else {
           final String userId = await widget.auth.createUserWithEmailAndPassword(_email, _password);
           print('Registered user: $userId');
         }
         widget.onSignedIn();
       } catch (e) {
+         showToast();
         print('Error: $e');
       }
     }

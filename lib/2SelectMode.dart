@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:location/location.dart';
 import 'package:toricar/3aLoginCliente.dart';
 import 'package:toricar/3bLoginRemis.dart';
 import 'package:toricar/auth.dart';
@@ -7,57 +8,64 @@ import 'package:toricar/homePage.dart';
 import '4bMenuRemis.dart';
 import '4aMenuCliente.dart';
 
+//Screen para entrar como conductor o cliente
 class SelectMode extends StatefulWidget {
+  //llamo al auth de firebase
   SelectMode({this.auth});
   final BaseAuth auth;
-  
 
   @override
   _SelectModeState createState() => _SelectModeState();
 }
 
-enum AuthStatus { notDetermined, notSignedIn, signedIn }
+//enumero 3 estados
+enum EstadosAuth { noDeterminado, noRegistrado, registrado }
 
 class _SelectModeState extends State<SelectMode> {
-  AuthStatus authStatus = AuthStatus.notDetermined;
-
+  EstadosAuth estadosAuth = EstadosAuth.noDeterminado;
+//inicializamos las siguentes:
   @override
   initState() {
     super.initState();
-    
+    //LLamamos al widget auth y le pedimos el user
     widget.auth.currentUser().then((userId) {
       setState(() {
-        authStatus =
-            userId == null ? AuthStatus.notSignedIn : AuthStatus.signedIn;
+        //guardar el estado de la llamada si esta registrado o no
+        estadosAuth =
+            userId == null ? EstadosAuth.noRegistrado : EstadosAuth.registrado;
+        print(userId);
       });
     });
   }
 
+//nose si sirve
   @override
   void didChangeDependecies() {
     super.didChangeDependencies();
     final BaseAuth auth = AuthProvider.of(context).auth;
     auth.currentUser().then((String userId) {
       setState(() {
-        authStatus =
-            userId == null ? AuthStatus.notSignedIn : AuthStatus.signedIn;
+        estadosAuth =
+            userId == null ? EstadosAuth.noRegistrado : EstadosAuth.registrado;
         print(userId);
       });
     });
   }
 
-  void _signedIn() {
+//metodo para registar
+  void _loguearse() {
     setState(() {
-      authStatus = AuthStatus.signedIn;
+      estadosAuth = EstadosAuth.registrado;
     });
   }
 
-  void _signedOut() {
+  void _desloguearse() {
     setState(() {
-      authStatus = AuthStatus.notSignedIn;
+      estadosAuth = EstadosAuth.noRegistrado;
     });
   }
 
+//construimos el widget
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,7 +91,7 @@ class _SelectModeState extends State<SelectMode> {
                       "Quiero Trabajar",
                       style: TextStyle(
                           color: Colors.white54,
-                          fontSize: 18,
+                          fontSize: 14,
                           fontWeight: FontWeight.bold),
                     ),
                   ],
@@ -94,8 +102,10 @@ class _SelectModeState extends State<SelectMode> {
                     context,
                     MaterialPageRoute(
                         builder: (context) =>
-                            authStatus == AuthStatus.notSignedIn
-                                ? LoginRemis()
+                            estadosAuth == EstadosAuth.noRegistrado
+                                ? HomePage(
+                                    onSignedOut: _desloguearse,
+                                  )
                                 : MenuRemis()),
                   ),
             ),
@@ -118,7 +128,7 @@ class _SelectModeState extends State<SelectMode> {
                       "Quiero un Remis",
                       style: TextStyle(
                           color: Colors.blueGrey[500],
-                          fontSize: 18,
+                          fontSize: 14,
                           fontWeight: FontWeight.bold),
                     ),
                   ],
@@ -128,12 +138,17 @@ class _SelectModeState extends State<SelectMode> {
               onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) =>
-                            authStatus == AuthStatus.notSignedIn
-                                ? LoginCliente(
-                                    onSignedIn: _signedIn,
-                                  )
-                                : MenuCliente(onSignedOut: _signedOut,auth: Auth()))
+                      builder: (context) =>
+                          estadosAuth == EstadosAuth.noRegistrado
+                              ? LoginCliente(
+                                  onSignedIn: _loguearse,
+                                  auth: Auth(),
+                                )
+                              : MenuCliente(
+                                  seDeslogueo: _desloguearse,
+                                  auth: Auth(),
+                                ),
+                    ),
                   ),
             ),
           )

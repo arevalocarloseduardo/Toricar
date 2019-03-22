@@ -1,7 +1,5 @@
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
@@ -9,15 +7,15 @@ import 'package:toricar/auth.dart';
 import 'package:toricar/authProvider.dart';
 
 class MenuCliente extends StatefulWidget {
-  const MenuCliente({this.onSignedOut,this.auth});
-  final VoidCallback onSignedOut;
+  const MenuCliente({this.seDeslogueo,this.auth});
+  final VoidCallback seDeslogueo;
    final BaseAuth auth;
   
   Future<void> _signOut(BuildContext context) async {
     try {
       final BaseAuth auth = AuthProvider.of(context).auth;
       await auth.signOut();
-      onSignedOut();
+      seDeslogueo();
     } catch (e) {
       print(e);
     }
@@ -29,11 +27,8 @@ class MenuCliente extends StatefulWidget {
 
 class _MenuClienteState extends State<MenuCliente> {
   Completer<GoogleMapController> _controller = Completer();
-  
 
-  
-//iniicializo Variable
-
+//inicio Variables
   String id;
   String name="hola";
   Marker laPlata;
@@ -44,50 +39,58 @@ class _MenuClienteState extends State<MenuCliente> {
   var latitude;
   var longitude;
   var email;
+  var hayPermisos = false;
+
   @override
   void initState() {
     super.initState();
-    widget.auth.email().then((userId) {
+      widget.auth.email().then((userId) {
       setState(() {
         email = userId;
       });
     });
     
-    //metodo para cuando haya un cambio en la ubicacion actualiza currentLocation
+     //llamo la funcion de permission con un future
+    Future<bool> permisos = location.hasPermission();
+    
+    permisos.then((onValue)=>hayPermisos=onValue);
+    //cuando termina de hacer la consulta guardamos el esto en hayPermisos permisos.then((onValue)=>hayPermisos=permisos);
     location.onLocationChanged().listen((LocationData value) {
-      setState(() {
-        latitude = value.latitude;
-        longitude = value.longitude;
+      latitude = value.latitude;
+      longitude = value.longitude;
+      setState(() {      
         //Creo un Marker inicial
-        laPlata = Marker(
+       laPlata = Marker(
           markerId: MarkerId('Tu ubicación'),
           position: LatLng(latitude, longitude),
           infoWindow: InfoWindow(title: 'Tu ubicacion'),
         );
+        _goToLosAngeles();
+         
       });
-    });
+    },);
+    //metodo para cuando haya un cambio en la ubicacion actualiza currentLocation
+    
   }
 
   @override
   Widget build(BuildContext context) {
     //muevo la camara a nuestro pocicion actual
-    CameraPosition vegasPosition =
-        CameraPosition(target: LatLng(latitude, longitude), zoom: 15);
+   // CameraPosition vegasPosition = CameraPosition(target:LatLng(latitude, longitude), zoom: 15);
 
     return Scaffold(
       appBar: AppBar(),
-      body: Stack(
+      body: hayPermisos==false?Center(child:Text("Compruebe permisos")):Stack(
         children: <Widget>[
           Container(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
-            child: GoogleMap(
+            child: longitude == null
+              ? Center(child:CircularProgressIndicator()):GoogleMap(
               mapType: MapType.normal,
               compassEnabled: true,
               myLocationEnabled: true,
-              initialCameraPosition: latitude == null
-                  ? CircularProgressIndicator()
-                  : vegasPosition,
+              initialCameraPosition: CameraPosition(target:LatLng(latitude, longitude), zoom: 15),
               onMapCreated: (GoogleMapController controller) {
                 _controller.complete(controller);
               },
@@ -122,6 +125,13 @@ class _MenuClienteState extends State<MenuCliente> {
       ),
     );
   }
+  Future<void> _goToLosAngeles() async {
+      final GoogleMapController controller = await _controller.future;
+      controller
+          .animateCamera(CameraUpdate.newCameraPosition(CameraPosition(target:LatLng(latitude, longitude), zoom: 15)));
+    }
+  
+
  void _addMarker() async {
    var correos = email;
        DocumentReference ref = await db.collection('posicion_inicial').add({'latitud':'$name ','longitud':'$name ','cliente':'$correos'});

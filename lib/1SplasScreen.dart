@@ -7,7 +7,6 @@ class SplashScreen extends StatefulWidget {
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
-
 //Este Screen es un splash con 3 segundos de duración
 class _SplashScreenState extends State<SplashScreen> {
   @override
