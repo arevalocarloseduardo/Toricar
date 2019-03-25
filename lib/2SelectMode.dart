@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
+import 'package:platform/platform.dart';
 import 'package:toricar/3aLoginCliente.dart';
-import 'package:toricar/3bLoginRemis.dart';
+import 'package:toricar/4a3VerRuta.dart';
 import 'package:toricar/auth.dart';
 import 'package:toricar/authProvider.dart';
 import 'package:toricar/homePage.dart';
 import '4bMenuRemis.dart';
 import '4aMenuCliente.dart';
+import 'package:android_intent/android_intent.dart';
 
 //Screen para entrar como conductor o cliente
 class SelectMode extends StatefulWidget {
@@ -78,79 +80,54 @@ class _SelectModeState extends State<SelectMode> {
             left: 100,
             right: 100,
             child: FlatButton(
-              splashColor: Colors.blueAccent,
-              child: Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: Column(
-                  children: <Widget>[
-                    Icon(
-                      Icons.work,
-                      color: Colors.white54,
-                    ),
-                    Text(
-                      "Quiero Trabajar",
-                      style: TextStyle(
-                          color: Colors.white54,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-              ),
-              color: Colors.lightBlue[400],
-              onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            estadosAuth == EstadosAuth.noRegistrado
-                                ? HomePage(
-                                    onSignedOut: _desloguearse,
-                                  )
-                                : MenuRemis()),
+                splashColor: Colors.blueAccent,
+                child: Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: Column(
+                    children: <Widget>[
+                      Icon(
+                        Icons.work,
+                        color: Colors.white54,
+                      ),
+                      Text(
+                        "Quiero Trabajar",
+                        style: TextStyle(
+                            color: Colors.white54,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ],
                   ),
-            ),
+                ),
+                color: Colors.lightBlue[400],
+                onPressed: abrirMaps),
           ),
           Positioned(
             bottom: 250,
             left: 100,
             right: 100,
             child: FlatButton(
-              splashColor: Colors.amberAccent,
-              child: Padding(
-                padding: const EdgeInsets.all(5.0),
-                child: Column(
-                  children: <Widget>[
-                    Icon(
-                      Icons.directions_car,
-                      color: Colors.blueGrey[500],
-                    ),
-                    Text(
-                      "Quiero un Remis",
-                      style: TextStyle(
-                          color: Colors.blueGrey[500],
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-              ),
-              color: Colors.greenAccent,
-              onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          estadosAuth == EstadosAuth.noRegistrado
-                              ? LoginCliente(
-                                  onSignedIn: _loguearse,
-                                  auth: Auth(),
-                                )
-                              : MenuCliente(
-                                  seDeslogueo: _desloguearse,
-                                  auth: Auth(),
-                                ),
-                    ),
+                splashColor: Colors.amberAccent,
+                child: Padding(
+                  padding: const EdgeInsets.all(5.0),
+                  child: Column(
+                    children: <Widget>[
+                      Icon(
+                        Icons.directions_car,
+                        color: Colors.blueGrey[500],
+                      ),
+                      Text(
+                        "Quiero un Remis",
+                        style: TextStyle(
+                            color: Colors.blueGrey[500],
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ],
                   ),
-            ),
+                ),
+                color: Colors.greenAccent,
+                onPressed: btnQuieroRemis),
           )
         ],
       ),
@@ -174,4 +151,38 @@ class _SelectModeState extends State<SelectMode> {
             begin: Alignment.centerRight,
             end: Alignment(-1.0, -1.0),
           )));
+
+  void btnQuieroRemis() {
+    //cuando no esta registrado que lo envie al sistema registro
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => estadosAuth == EstadosAuth.noRegistrado
+            ? LoginCliente(
+                onSignedIn: _loguearse,
+                auth: Auth(),
+              )
+            : MenuCliente(tabIndex: 0,
+                seDeslogueo: _desloguearse,
+                auth: Auth(),
+              ),
+      ),
+    );
+  }
+}
+
+void abrirMaps() {
+  String origin = "123.34,68.56";
+  String destination = "-34.9181358,-57.9451325";
+  if (new LocalPlatform().isAndroid) {
+    final AndroidIntent intent = new AndroidIntent(
+        action: 'action_view',
+        data: Uri.encodeFull("https://www.google.com/maps/dir/?api=1&origin=" +
+            origin +
+            "&destination=" +
+            destination +
+            "&travelmode=driving&dir_action=navigate"),
+        package: 'com.google.android.apps.maps');
+    intent.launch();
+  }
 }
