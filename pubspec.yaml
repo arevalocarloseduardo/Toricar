@@ -27,6 +27,7 @@ dependencies:
   flutter_facebook_login: ^2.0.0
   flutter_auth_buttons: ^0.3.1
   fluttertoast: ^3.0.3
+  flutter_swiper: ^1.1.4
   
 dev_dependencies:
   flutter_test:

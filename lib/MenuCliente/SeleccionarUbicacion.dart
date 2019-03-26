@@ -30,7 +30,7 @@ class _SeleccionarUbicacionState extends State<SeleccionarUbicacion> {
   var longitude;
   var email;
   var hayPermisos = false;
-  var cargando=false;
+  var cargando = false;
   @override
   void initState() {
     super.initState();
@@ -97,18 +97,21 @@ class _SeleccionarUbicacionState extends State<SeleccionarUbicacion> {
                   child: FlatButton(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: cargando==true ?Text("Cargando datos..."):Column(
-                        children: <Widget>[
-                          Icon(
-                            Icons.pin_drop,
-                            color: Colors.white,
-                          ),
-                          Text(
-                            "Confirmar mi posición inicial",
-                            style: TextStyle(color: Colors.white, fontSize: 18),
-                          ),
-                        ],
-                      ),
+                      child: cargando == true
+                          ? Text("Cargando datos...")
+                          : Column(
+                              children: <Widget>[
+                                Icon(
+                                  Icons.pin_drop,
+                                  color: Colors.white,
+                                ),
+                                Text(
+                                  "Confirmar mi posición inicial",
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 18),
+                                ),
+                              ],
+                            ),
                     ),
                     color: Colors.green,
                     onPressed: _addMarker,
@@ -127,7 +130,7 @@ class _SeleccionarUbicacionState extends State<SeleccionarUbicacion> {
 
   void _addMarker() async {
     setState(() {
-     cargando =true; 
+      cargando = true;
     });
     var correos = email;
     DocumentReference ref = await db.collection('posicion_inicial').add({
@@ -138,12 +141,20 @@ class _SeleccionarUbicacionState extends State<SeleccionarUbicacion> {
     setState(() {
       id = ref.documentID;
       print(ref.documentID);
-      cargando=false;
     });
     Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => SeleccionarDestino(auth: Auth(),latitudeInicial: latitude,longitudeInicial: longitude,)));
+      context,
+      MaterialPageRoute(
+        builder: (context) => SeleccionarDestino(
+              auth: Auth(),
+              latitudeInicial: latitude,
+              longitudeInicial: longitude,
+            ),
+      ),
+    ).then((onValue){
+      setState(() {
+      cargando = false;
+    });});
+    
   }
-
 }

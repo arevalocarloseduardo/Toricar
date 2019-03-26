@@ -1,21 +1,18 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:toricar/2SelectMode.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:toricar/4aMenuCliente.dart';
 import 'package:toricar/auth.dart';
-import 'package:toricar/authProvider.dart';
 
-class EmailFieldValidator {
-  static String validate(String value) {
-    return value.isEmpty ? 'Email can\'t be empty' : null;
+class VerificarCampoEmail {
+  static String validar(String valor) {
+    return valor.isEmpty ? 'El correo no puede estar vacio' : null;
   }
 }
 
-class PasswordFieldValidator {
-  static String validate(String value) {
-    return value.isEmpty ? 'Password can\'t be empty' : null;
+class VerificarCampoPass {
+  static String validar(String valor) {
+    return valor.isEmpty ? 'La contraseña no puede estar vacia' : null;
   }
 }
 
@@ -45,17 +42,17 @@ class _LoginClienteState extends State<LoginCliente> {
     }
     return false;
   }
-  Future<void> validateAndSubmit() async {
+  Future<void> validarEnviar() async {
     if (validateAndSave()) {
       try {
         if (_formType == FormType.login) {
           final String userId = await widget.auth.signInWithEmailAndPassword(_email, _password);
-          print('Signed in: $userId');
+          print('Logueado: $userId');
           Navigator.of(context).pushReplacement(
                         CupertinoPageRoute(builder: (context) => MenuCliente()));
         } else {
           final String userId = await widget.auth.createUserWithEmailAndPassword(_email, _password);
-          print('Registered user: $userId');
+          print('Registrado user: $userId');
         }
         widget.onSignedIn();
       } catch (e) {
@@ -64,13 +61,13 @@ class _LoginClienteState extends State<LoginCliente> {
       }
     }
   }
-    void moveToLogin() {
+    void irAlLogin() {
     formKey.currentState.reset();
     setState(() {
       _formType = FormType.login;
     });
   }
-  void moveToRegister(){
+  void irAlRegistro(){
     formKey.currentState.reset();
     setState((){
       _formType = FormType.register;
@@ -86,7 +83,7 @@ class _LoginClienteState extends State<LoginCliente> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Flutter login demo'),
+        title: Text('Bienvenido Al Toricar'),
       ),
       body: Container(
         padding: EdgeInsets.all(16.0),
@@ -105,15 +102,15 @@ class _LoginClienteState extends State<LoginCliente> {
     return <Widget>[
       TextFormField(
         key: Key('email'),
-        decoration: InputDecoration(labelText: 'Email'),
-        validator: EmailFieldValidator.validate,
+        decoration: InputDecoration(labelText: 'Correo'),
+        validator: VerificarCampoEmail.validar,
         onSaved: (String value) => _email = value,
       ),
       TextFormField(
         key: Key('password'),
-        decoration: InputDecoration(labelText: 'Password'),
+        decoration: InputDecoration(labelText: 'Contraseña'),
         obscureText: true,
-        validator: PasswordFieldValidator.validate,
+        validator: VerificarCampoPass.validar,
         onSaved: (String value) => _password = value,
       ),
     ];
@@ -124,23 +121,23 @@ class _LoginClienteState extends State<LoginCliente> {
       return <Widget>[
         RaisedButton(
           key: Key('signIn'),
-          child: Text('Login', style: TextStyle(fontSize: 20.0)),
-          onPressed: validateAndSubmit,
+          child: Text('Ingresar', style: TextStyle(fontSize: 20.0)),
+          onPressed: validarEnviar,
         ),
         FlatButton(
-          child: Text('Create an account', style: TextStyle(fontSize: 20.0)),
-          onPressed: moveToRegister,
+          child: Text('Crear cuenta', style: TextStyle(fontSize: 20.0)),
+          onPressed: irAlRegistro,
         ),
       ];
     } else {
       return <Widget>[
         RaisedButton(
-          child: Text('Create an account', style: TextStyle(fontSize: 20.0)),
-          onPressed: validateAndSubmit,
+          child: Text('Crear cuenta', style: TextStyle(fontSize: 20.0)),
+          onPressed: validarEnviar,
         ),
         FlatButton(
-          child: Text('Have an account? Login', style: TextStyle(fontSize: 20.0)),
-          onPressed: moveToLogin,
+          child: Text('Ya tenés cuenta? Ingresá', style: TextStyle(fontSize: 20.0)),
+          onPressed: irAlLogin,
         ),
       ];
     }
