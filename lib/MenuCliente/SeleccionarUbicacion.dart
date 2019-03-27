@@ -133,7 +133,7 @@ class _SeleccionarUbicacionState extends State<SeleccionarUbicacion> {
       cargando = true;
     });
     var correos = email;
-    DocumentReference ref = await db.collection('posicion_inicial').add({
+   /* DocumentReference ref = await db.collection('posicion_inicial').add({
       'latitud': '$latitude ',
       'longitud': '$longitude ',
       'cliente': '$correos'
@@ -141,7 +141,7 @@ class _SeleccionarUbicacionState extends State<SeleccionarUbicacion> {
     setState(() {
       id = ref.documentID;
       print(ref.documentID);
-    });
+    });*/
     Navigator.push(
       context,
       MaterialPageRoute(
