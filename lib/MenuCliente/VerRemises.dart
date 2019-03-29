@@ -2,8 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:toricar/MenuCliente/confirmarPage.dart';
-import 'package:toricar/Models/TodoItem.dart';
-
 import 'package:smooth_star_rating/smooth_star_rating.dart';
 import 'package:toricar/crud.dart';
 import 'package:toricar/auth.dart';
@@ -30,8 +28,13 @@ class _VerRemisesState extends State<VerRemises> {
 
   crudMedthods crudObj = new crudMedthods();
   CollectionReference _todosRef;
+ List <bool>btnCool=List();
 
-  var tengoViaje = true;
+  String miId;
+
+  var bt;
+
+  var btnF;
   @override
   void initState() {
     crudObj.getData().then((results) {
@@ -40,7 +43,11 @@ class _VerRemisesState extends State<VerRemises> {
       });
     });
     super.initState();
+    btnCool.add(false);
     _todosRef = Firestore.instance.collection('remiseros');
+    FirebaseAuth.instance.currentUser().then((onValue) {
+      miId = onValue.uid;
+    });
   }
 
   @override
@@ -58,8 +65,18 @@ class _VerRemisesState extends State<VerRemises> {
                       .snapshots(),
                   builder: (BuildContext context,
                       AsyncSnapshot<QuerySnapshot> snapshot) {
-                    return Swiper(
+                       
+                        
+                             
+                    return Swiper(                      
                       itemBuilder: (context, index) {
+                        
+                        for (var i = 0; i < snapshot.data.documents.length; i++) {                          
+                            btnCool.add(false);                       
+                        }
+                        btnCool.removeRange(snapshot.data.documents.length, btnCool.length);
+                        
+                                                                
                         return Padding(
                           padding: EdgeInsets.all(5),
                           child: Column(
@@ -151,19 +168,80 @@ class _VerRemisesState extends State<VerRemises> {
                                       ),
                                     ],
                                   ),
-                                  tengoViaje == true
-                                      ? FlatButton(
-                                          child: Text("Pedir que me lleve${snapshot.data.documents[index].data['tiempoEspera']}"),
-                                          onPressed: () {tengoViaje = false;},
+                                 btnCool[index] == false? FlatButton(
+                                          child: Text("Pedir que me lleve"),
                                           color: Colors.blue,
                                           textColor: Colors.white,
-                                        )
-                                      : FlatButton(
+                                          onPressed: () {
+                                             /*crudObj.agregarViaje(
+                                                    {'aprobado': false,'remis':
+                                                    snapshot.data.documents[index]
+                                                        .documentID,
+                                                        'cliente':miId,
+                                                        'fecha':"07/01",
+                                                        'hora':"12:51",
+                                                        'latEnd':widget.latitudFinal,
+                                                        'latIn':widget.latitudeInicial,
+                                                        'longIn':widget.longitudeInicial,
+                                                        'longEnd':widget.longitudFinal}).then((results) {*/
+                                                  setState(() {
+                                                    btnCool[index]=true;
+                                                    print(btnCool);
+
+                                                 /* });*/
+                                                });}):FlatButton(
                                           child: Text("Esperando Confirmación..."),
-                                          onPressed: () {tengoViaje = true;},
                                           color: Colors.red,
                                           textColor: Colors.white,
-                                        )
+                                          onPressed: () {
+                                             /*crudObj.agregarViaje(
+                                                    {'aprobado': false,'remis':
+                                                    snapshot.data.documents[index]
+                                                        .documentID,
+                                                        'cliente':miId,
+                                                        'fecha':"07/01",
+                                                        'hora':"12:51",
+                                                        'latEnd':widget.latitudFinal,
+                                                        'latIn':widget.latitudeInicial,
+                                                        'longIn':widget.longitudeInicial,
+                                                        'longEnd':widget.longitudFinal}).then((results) {*/
+                                                  setState(() {
+                                                    btnCool[index]=false;
+                                                    print(btnCool);
+                                                    
+                                                 /* });*/
+                                                });})/*StreamBuilder(
+                                      stream: Firestore.instance
+                                          .collection('remiseros')
+                                          .document(snapshot
+                                              .data.documents[index].documentID).collection('viajesConfirmar').document(miId)
+                                          .snapshots(),
+                                      builder: (context, ssnapshot) {
+                                        if (ssnapshot.connectionState==null){
+                                          return Text("data");
+                                        }
+                                        print('Snapshot dale guasho: $ssnapshot');
+                                        return  FlatButton(
+                                          child: Text(
+                                              "Pedir que ssme lleve ${ssnapshot.data['carname']}"),
+                                          onPressed: () {
+                                             crudObj.getData().then((results) {
+                                                  setState(() {
+                                                    cars = results;
+                                                    tengoViaje = cars.documents[index].data['viajesConfirmar'].data[miId].data['carname'];
+                                                  });
+                                                });
+                                                
+                                               
+                                                crudObj.addData(
+                                                    snapshot.data.documents[index]
+                                                        .documentID,
+                                                    {'carname': false});
+                                          },
+                                          color: Colors.blue,
+                                          textColor: Colors.white,
+                                        );
+                                      })*/
                                 ],
                               ),
                             ],

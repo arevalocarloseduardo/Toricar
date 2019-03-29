@@ -83,7 +83,7 @@ class _LoginClienteState extends State<LoginCliente> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Bienvenido Al Toricar'),
+        title: Text('Bienvenido A Toricar'),
       ),
       body: Container(
         padding: EdgeInsets.all(16.0),
