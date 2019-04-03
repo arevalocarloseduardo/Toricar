@@ -33,17 +33,16 @@ class crudMedthods{
     }else{
       print('necesitas registrarte');
     }
-  }
-
-
-
-    verValor(id)async{
+  }    verValor(id)async{
     if(isLoggedIn()){
       
      return await Firestore.instance.collection('remiseros').document(id).collection('viajesConfirmar').document(miId).collection('carname').snapshots();
   }}
   getData()async{
-    return await Firestore.instance.collection('remiseros').snapshots();
+    return await Firestore.instance.collection('viajes').snapshots();
   }
-
+  deleteData(docId){
+    Firestore.instance.collection('viajes').document(docId).delete().catchError((e){print(e);
+  });
+  }
 }
