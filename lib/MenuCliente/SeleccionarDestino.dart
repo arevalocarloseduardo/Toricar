@@ -194,7 +194,6 @@ class _SeleccionarDestinoState extends State<SeleccionarDestino> {
     
   }
   buscardestino() async {
-
     var addresses = await Geocoder.local.findAddressesFromCoordinates(Coordinates(latitudeFinal, longitudeFinal));
     var first = addresses.first;
     print("cosas");

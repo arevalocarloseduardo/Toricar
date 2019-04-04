@@ -1,10 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:toricar/Models/TodoItem.dart';
-import 'package:toricar/Models/User.dart';
-import 'package:toricar/Models/remisesItem.dart';
-import 'package:toricar/crud.dart';
+import 'package:geocoder/geocoder.dart';
 
 class HistorialPage extends StatefulWidget {
   @override
@@ -12,187 +8,171 @@ class HistorialPage extends StatefulWidget {
 }
 
 class _HistorialPageState extends State<HistorialPage> {
-  CollectionReference _todosRef;
-  CollectionReference _remisRef;
-  FirebaseUser _user;
-
-  String id;
   final db = Firestore.instance;
-  String name;
 
-  DocumentSnapshot docu;
   @override
   void initState() {
     super.initState();
-    _setUpTodoPage();
   }
-
-  getUsers() {
-    Firestore.instance.collection('remiseros').snapshots();
-  }
-
-  addUser() {}
-
-  void _setUpTodoPage() async {
-    FirebaseUser user = await FirebaseAuth.instance.currentUser();
-    setState(() {
-      _user = user;
-      _todosRef = Firestore.instance.collection('viajes');
-      _remisRef = Firestore.instance.collection('remiseros');
-    });
-  }
-
-  void _cargarDatos() async {}
-
-  Widget buildBodys() {
-    if (_todosRef == null) {
-      return CircularProgressIndicator();
-    } else {
-      return StreamBuilder(
-          stream: _todosRef.where('aprobado', isEqualTo: false).snapshots(),
-          builder: _buildTodoList);
-    }
-  }
-
-  Widget _buildBody(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance.collection('remiseros').snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Text("error");
-        }
-        if (snapshot.hasData) {
-          return buildList(context, snapshot.data.documents);
-        }
-        return CircularProgressIndicator();
-      },
-    );
-  }
-
-  Widget buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
-    return ListView(
-      children: snapshot.map((data) {
-        buildListem(context, data);
-      }).toList(),
-    );
-  }
-
-  Widget buildListem(BuildContext context, DocumentSnapshot data) {
-    final record = User.fromSnapshot(data);
-    return Column(
-      children: <Widget>[
-        Center(child: Text(record.name)),
-      ],
-    );
-  }
-
-  Widget _buildTodoList(
-      BuildContext buildContext, AsyncSnapshot<QuerySnapshot> snapshot) {
-    if (!snapshot.hasData) {
-      return CircularProgressIndicator();
-    } else {
-      if (snapshot.data.documents.length == 0) {
-        return Text("error");
-      } else {
-        return ListView(
-          children: snapshot.data.documents.map(
-            (DocumentSnapshot document) {
-              TodoItem item = TodoItem.from(document);
-              return Dismissible(
-                key: Key(item.id),
-                background: Container(
-                  color: Colors.red,
-                  child: Center(
-                    child: Text("Cancelar Viaje"),
-                  ),
-                ),
-                onDismissed: (DismissDirection direction) {
-                  document.reference.delete();
-                },
-                child: Card(
-                  child: ListTile(
-                    title: Text(item.id),
-                    subtitle: Text(""),
-                  ),
-                ),
-              );
-            },
-          ).toList(),
-        );
-      }
-    }
-  }
-
 
   @override
   Widget build(BuildContext context) {
     return Container(
       child: Center(
-          child: ListView(
-        children: <Widget>[
-          StreamBuilder<QuerySnapshot>(
-            stream: db.collection('viajes').snapshots(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Column(
-                    children: snapshot.data.documents
-                        .map((doc) => mostrarViajes(doc))
-                        .toList());
-              } else {
-                return Text("data");
-              }
-            },
-          )
-        ],
-      )),
-    );
-  }
-  Card mostrarViajes(DocumentSnapshot doc) { 
-    var idRemisero = doc.data['remis'];   
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: ListView(
           children: <Widget>[
-            Text(doc.data['cliente']),
-            _mostrarNombreRemis(context,idRemisero)
+            StreamBuilder<QuerySnapshot>(
+              stream: db.collection('viajes').snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Column(
+                      children: snapshot.data.documents
+                          .map((doc) => mostrarViajes(doc))
+                          .toList());
+                } else {
+                  return CircularProgressIndicator();
+                }
+              },
+            )
           ],
         ),
       ),
     );
   }
-  
-  Widget _mostrarNombreRemis(BuildContext context, idRemisero) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance.collection('remiseros').snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Text("error");
-        }
-        if (snapshot.hasData) {
-          return Column(
-                    children: snapshot.data.documents
-                        .map((doc) => traerNombre(doc,idRemisero))
-                        .toList());
-        }
-        return CircularProgressIndicator();
-      },
-    );
-  }
- Column traerNombre(DocumentSnapshot docs, idRemisero) {
-   if (docs.documentID==idRemisero){
-   return Column(
-     children: <Widget>[
-       Text(docs.data['nombre']),
-     ],
-   );}
-   else{
-     return Column();
-   }
-   
- }
-  
+
+  Card mostrarViajes(DocumentSnapshot doc) {
+    var idRemisero = doc.data['remis'];
+    double lat =doc.data['latEnd'];
+    double long = doc.data['longEnd'];    
+    
+    
+    return Card(
+      child: Dismissible(
+        key: Key(doc.documentID),
+        background: Container(
+          color: Colors.red,
+          child: Center(
+            child: Text("Cancelar Viaje"),
+          ),
+        ),
+        onDismissed: (DismissDirection direction) {
+          doc.reference.delete();
+        },
+        child: ListTile(
+          title: Column(crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              _mostrarNombreRemis(context, idRemisero),
+              doc.data['aprobado']==false?
+              Text("Esperando Aprobacion... ",style: TextStyle(fontSize: 18,color: Colors.red),):
+              Text("Aprobado",style: TextStyle(fontSize: 18,color: Colors.green),),
+            ],
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text("Destino: ${doc.data['direccionEnd']} ",style: TextStyle(fontSize: 18),),
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(
+                    "Hora: ${doc.data['hora']} ",
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  Text(
+                    "${doc.data['fecha']} ",
+                    textAlign: TextAlign.right,
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          trailing: Column(children: <Widget>[
+            _mostrarFoto(context, idRemisero)
+            
+          ],)
+                  ),
+                ),
+              );
+            }
+            //_mostrarNombreRemis(context, idRemisero),Text(doc.data['cliente'])
+            
+            Widget _mostrarNombreRemis(BuildContext context, idRemisero) {
+              return StreamBuilder<QuerySnapshot>(
+                stream: Firestore.instance.collection('remiseros').snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Text("error");
+                  }
+                  if (snapshot.hasData) {
+                    return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: snapshot.data.documents
+                            .map((doc) => traerNombre(doc, idRemisero))
+                            .toList());
+                  }
+                  return CircularProgressIndicator();
+                },
+              );
+            }
+          
+            Column traerNombre(DocumentSnapshot docs, idRemisero) {
+              if (docs.documentID == idRemisero) {
+                return Column(
+                  children: <Widget>[
+                    Text(
+                      "${docs.data['nombre']}",
+                      style: TextStyle(fontSize: 22),
+                    ),
+                  ],
+                );
+              } else {
+                return Column();
+              }
+            }
+
+            Widget traerfoto(DocumentSnapshot docs, idRemisero) {
+              if (docs.documentID == idRemisero) {
+                return ClipOval(
+              child: Image.network(
+            "${docs.data['img']}",
+            fit: BoxFit.cover,
+            width: 52.0,
+            height: 52.0,
+          ));
+              } else {
+                return ClipOval(
+              child: Image.network(
+            "",
+            fit: BoxFit.cover,
+            width: 52.0,
+            height: 52.0,
+          ));
+              }
+            }
+
+
+          
+            _mostrarFoto(BuildContext context, idRemisero) {
+              return StreamBuilder<QuerySnapshot>(
+                stream: Firestore.instance.collection('remiseros').snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Text("error");
+                  }
+                  if (snapshot.hasData) {
+                    return Stack(
+                        children: snapshot.data.documents
+                            .map((doc) => traerfoto(doc, idRemisero))
+                            .toList());
+                  }
+                  return CircularProgressIndicator();
+                },
+              );
+
+              
+            }
 
  
 }
