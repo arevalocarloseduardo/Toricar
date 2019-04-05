@@ -75,8 +75,10 @@ class _MenuClienteState extends State<MenuCliente> {
   
 
     //llamo la funcion de permission con un future
-    Future<bool> permisos = location.requestService();
-    permisos.then((onValue) => hayPermisos = onValue);
+   Future<bool> permisos = location.requestService();
+    permisos.then((onValue) {setState(() {
+     hayPermisos = onValue; 
+    });});
   }
 
   @override

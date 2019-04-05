@@ -267,8 +267,7 @@ void _agregarMarcador()  {
                                                 },
                                               )
                                             : FlatButton(
-                                                child: Text(
-                                                    "Esperando Confirmación..."),
+                                                child: Text("Esperando Confirmación..."),
                                                 color: Colors.red,
                                                 textColor: Colors.white,
                                                 onPressed: () {
