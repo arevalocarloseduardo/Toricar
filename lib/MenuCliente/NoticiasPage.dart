@@ -50,8 +50,7 @@ class _NoticiasPageState extends State<NoticiasPage> {
     );
   }
 
-
-  Future<void> _hacerTrack(lat,long) async {
+  Future<void> _hacerTrack(lat, long) async {
     final GoogleMapController controller = await _controller.future;
     controller.animateCamera(CameraUpdate.newCameraPosition(
         CameraPosition(target: LatLng(lat, long), zoom: 15)));
@@ -59,7 +58,7 @@ class _NoticiasPageState extends State<NoticiasPage> {
 
   Widget traerfoto(DocumentSnapshot docs, idRemisero) {
     if (docs.documentID == idRemisero) {
-        _hacerTrack(docs.data['lat'],docs.data['long']);
+      _hacerTrack(docs.data['lat'], docs.data['long']);
       return Container(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
@@ -70,7 +69,7 @@ class _NoticiasPageState extends State<NoticiasPage> {
           initialCameraPosition: CameraPosition(
               target: LatLng(docs.data['lat'], docs.data['long']), zoom: 16),
           onMapCreated: (GoogleMapController controller) {
-            _controller.complete(controller);           
+            _controller.complete(controller);
           },
           markers: {
             laPlata = Marker(
@@ -79,12 +78,10 @@ class _NoticiasPageState extends State<NoticiasPage> {
               infoWindow: InfoWindow(title: docs.data['nombre']),
             ),
           },
-          
         ),
       );
     } else {
-      return CircularProgressIndicator();
+      return Center(child: CircularProgressIndicator());
     }
   }
-  
 }

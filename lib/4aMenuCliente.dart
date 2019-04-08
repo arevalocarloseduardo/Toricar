@@ -100,15 +100,15 @@ class _MenuClienteState extends State<MenuCliente> {
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            title: Text("Noticias")
+            title: Text("Viaje")
             ),
               BottomNavigationBarItem(
               icon: Icon(Icons.directions_car),
-              title: Text("Viajar")
+              title: Text("Pedir un viaje")
             ),
             BottomNavigationBarItem(
             icon: Icon(Icons.calendar_today),
-            title: Text("Historial")
+            title: Text("Estado de viaje")
             ),
             BottomNavigationBarItem(
             icon: Icon(Icons.info_outline),

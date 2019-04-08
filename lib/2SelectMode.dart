@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:platform/platform.dart';
 import 'package:toricar/3aLoginCliente.dart';
-import 'package:toricar/4a3VerRuta.dart';
+import 'package:toricar/3bLoginRemis.dart';
 import 'package:toricar/auth.dart';
 import 'package:toricar/authProvider.dart';
 import 'package:toricar/homePage.dart';
@@ -100,7 +100,7 @@ class _SelectModeState extends State<SelectMode> {
                   ),
                 ),
                 color: Colors.lightBlue[400],
-                onPressed: abrirMaps),
+                onPressed: btnQuieroTrabajar),
           ),
           Positioned(
             bottom: 250,
@@ -163,6 +163,23 @@ class _SelectModeState extends State<SelectMode> {
                 auth: Auth(),
               )
             : MenuCliente(tabIndex: 0,
+                seDeslogueo: _desloguearse,
+                auth: Auth(),
+              ),
+      ),
+    );
+  }
+   void btnQuieroTrabajar() {
+    //cuando no esta registrado que lo envie al sistema registro
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => estadosAuth == EstadosAuth.noRegistrado
+            ? LoginRemis(
+                onSignedIn: _loguearse,
+                auth: Auth(),
+              )
+            : MenuRemis(tabIndex: 0,
                 seDeslogueo: _desloguearse,
                 auth: Auth(),
               ),

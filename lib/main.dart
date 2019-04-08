@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:toricar/1SplasScreen.dart';
+import 'package:toricar/auth.dart';
 
 //Toricar es una Aplicacion creada en flutter inspirada en Uber
 
@@ -15,7 +16,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: SplashScreen(),     
+        home: SplashScreen(auth: Auth()),     
     );
   }
 }

@@ -33,7 +33,29 @@ class crudMedthods{
     }else{
       print('necesitas registrarte');
     }
-  }    verValor(id)async{
+  }      
+  Future<void>agregarRemis(id,cardData)async{
+    if(isLoggedIn()){
+      
+      Firestore.instance.collection('remiseros').document(id).setData(cardData).catchError((e){
+        print(e);
+      });
+    }else{
+      print('necesitas registrarte');
+    }
+  }    
+   Future<void>agregarCliente(id,cardData)async{
+    if(isLoggedIn()){
+      
+      Firestore.instance.collection('cliente').document(id).setData(cardData).catchError((e){
+        print(e);
+      });
+    }else{
+      print('necesitas registrarte');
+    }
+  }    
+  
+  verValor(id)async{
     if(isLoggedIn()){
       
      return await Firestore.instance.collection('remiseros').document(id).collection('viajesConfirmar').document(miId).collection('carname').snapshots();

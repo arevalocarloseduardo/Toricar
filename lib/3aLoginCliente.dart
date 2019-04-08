@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:toricar/4aMenuCliente.dart';
 import 'package:toricar/auth.dart';
+import 'package:toricar/crud.dart';
 
 class VerificarCampoEmail {
   static String validar(String valor) {
@@ -29,9 +30,12 @@ enum FormType{
 }
 
 class _LoginClienteState extends State<LoginCliente> {
+  crudMedthods crudObj = new crudMedthods();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   String _email;
   String _password;
+  String _nombre;
+  String _tel;
   FormType _formType = FormType.login;
 
   bool validateAndSave(){
@@ -51,7 +55,27 @@ class _LoginClienteState extends State<LoginCliente> {
           Navigator.of(context).pushReplacement(
                         CupertinoPageRoute(builder: (context) => MenuCliente()));
         } else {
-          final String userId = await widget.auth.createUserWithEmailAndPassword(_email, _password);
+          final String userId = await widget.auth.createUserWithEmailAndPassword(_email, _password).then((onValue){
+            crudObj.agregarCliente(onValue,{
+              'nombre': _nombre,
+              'correo': _email,
+              'tel': _tel,
+
+              
+            }).then((results){
+              setState(() {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MenuCliente(
+                              tabIndex: 0,
+                            ),
+                      ),
+                    );
+                
+              });
+            });
+          });
           print('Registrado user: $userId');
         }
         widget.onSignedIn();
@@ -99,7 +123,8 @@ class _LoginClienteState extends State<LoginCliente> {
   }
 
   List<Widget> buildInputs() {
-    return <Widget>[
+    if (_formType == FormType.login) {
+      return <Widget>[
       TextFormField(
         key: Key('email'),
         decoration: InputDecoration(labelText: 'Correo'),
@@ -113,7 +138,35 @@ class _LoginClienteState extends State<LoginCliente> {
         validator: VerificarCampoPass.validar,
         onSaved: (String value) => _password = value,
       ),
-    ];
+    ];} else {
+      return <Widget>[
+        TextFormField(
+          key: Key('email'),
+          decoration: InputDecoration(labelText: 'Correo'),
+          validator: VerificarCampoEmail.validar,
+          onSaved: (String value) => _email = value,
+        ),
+        TextFormField(
+          key: Key('password'),
+          decoration: InputDecoration(labelText: 'Contraseña'),
+          obscureText: true,
+          validator: VerificarCampoPass.validar,
+          onSaved: (String value) => _password = value,
+        ),
+        TextFormField(
+          key: Key('nombre'),
+          decoration: InputDecoration(labelText: 'nombre y apelido'),
+          validator: VerificarCampoPass.validar,
+          onSaved: (String value) => _nombre = value,
+        ),
+        TextFormField(
+          key: Key('tel'),
+          decoration: InputDecoration(labelText: 'Tel:'),
+          validator: VerificarCampoPass.validar,
+          onSaved: (String value) => _tel = value,
+        ),
+      ];
+    }
   }
 
   List<Widget> buildSubmitButtons() {
