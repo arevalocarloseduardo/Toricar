@@ -11,9 +11,10 @@ import 'package:toricar/auth.dart';
 import 'package:toricar/authProvider.dart';
 
 class MenuCliente extends StatefulWidget {
-  const MenuCliente({this.seDeslogueo, this.auth,this.tabIndex});
+  const MenuCliente({this.seDeslogueo, this.auth,this.tabIndex, this.idViaje});
   final VoidCallback seDeslogueo;
   final BaseAuth auth;
+  final String idViaje;
   final int tabIndex;
 
   Future<void> _signOut(BuildContext context) async {
@@ -62,7 +63,7 @@ class _MenuClienteState extends State<MenuCliente> {
   @override
   void initState() {
     //inicializo los tabs
-    one = NoticiasPage();
+    one = NoticiasPage(id:widget.idViaje);
     two = SeleccionarUbicacion(auth: Auth());
     tree =HistorialPage();
     four = InformacionPage();

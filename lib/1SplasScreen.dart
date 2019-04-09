@@ -2,13 +2,11 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:toricar/2LoginPage.dart';
-import 'package:toricar/2SelectMode.dart';
-import 'package:toricar/3bLoginRemis.dart';
 import 'package:toricar/4aMenuCliente.dart';
 import 'package:toricar/4bMenuRemis.dart';
 import 'package:toricar/auth.dart';
 
-class   SplashScreen extends StatefulWidget {
+class SplashScreen extends StatefulWidget {
   SplashScreen({this.auth});
   final BaseAuth auth;
 
@@ -105,11 +103,7 @@ animationCar=Tween<double>(begin: -420.0,end: 420.0).animate(animationController
                               seDeslogueo: _desloguearse,
                               auth: Auth(),
                             )
-                          : registradoEn == RegistradoEn.enDos
-                              ? SelectMode(
-                                  auth: Auth(),
-                                )
-                              : SplashScreen(),
+                          : SplashScreen(auth: Auth(),),
             ),
           ),
     );

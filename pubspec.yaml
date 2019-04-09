@@ -19,7 +19,9 @@ dependencies:
   rxdart: ^0.20.0
   geoflutterfire: ^2.0.3
   location: ^2.1.0
-  firebase_core: ^0.3.1+1
+  firebase_core: ^0.3.4
+  firebase_messaging: ^4.0.0+1
+  flutter_local_notifications: ^0.6.0
   cloud_firestore: ^0.9.5+2
   geocoder: 0.1.2
   font_awesome_flutter: ^8.4.0

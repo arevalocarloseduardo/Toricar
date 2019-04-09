@@ -11,6 +11,7 @@ class HistorialPage extends StatefulWidget {
 class _HistorialPageState extends State<HistorialPage> {
   final db = Firestore.instance;
   String miId = 'su';
+  String idViaje;
   @override
   void initState() {
     super.initState();
@@ -79,7 +80,7 @@ class _HistorialPageState extends State<HistorialPage> {
                           Padding(
                             padding: const EdgeInsets.only(left: 10),
                             child: FlatButton(
-                              child: Text("Confirmar",style: TextStyle(color: Colors.white),),
+                              child: Text("Aceptar",style: TextStyle(color: Colors.white),),
                               onPressed: () {
                                 eliminarDatos(doc.documentID);
                                 verUbicionRemis();
@@ -207,6 +208,7 @@ class _HistorialPageState extends State<HistorialPage> {
       for (DocumentSnapshot ds in valuer.documents) {
         if (ds.documentID == documentID) {
           print(ds.data);
+          idViaje=ds.documentID;
         } else {
           ds.reference.delete();
         }
@@ -218,7 +220,7 @@ class _HistorialPageState extends State<HistorialPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => MenuCliente(
+        builder: (context) => MenuCliente(idViaje:idViaje,
               tabIndex: 0,
             ),
       ),

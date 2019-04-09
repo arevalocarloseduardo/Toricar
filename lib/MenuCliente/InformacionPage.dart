@@ -28,15 +28,18 @@ class _InformacionPageState extends State<InformacionPage> {
   Widget build(BuildContext context) {
     return Container(
       child: Center(
-          child: Column(
+          child: Column(crossAxisAlignment: CrossAxisAlignment.center,mainAxisSize: MainAxisSize.max,mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           FlatButton(
-            child: Text("Cerrar seccion"),
+            child: Text("Cerrar sesion"),
             onPressed: cerrar,
             color: Colors.orange,
           ),
-          Text(
-              "aca se mostrar la informacion del usuario. estrellas, rankin etc"),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+                "Proximamente...acá se mostrará toda la informacion del usuario. rankin etc"),
+          ),
         ],
       )),
     );

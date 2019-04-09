@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:platform/platform.dart';
-import 'package:toricar/3aLoginCliente.dart';
 import 'package:toricar/3bLoginRemis.dart';
+import 'package:toricar/4aMenuCliente.dart';
+import 'package:toricar/4bMenuRemis.dart';
 import 'package:toricar/auth.dart';
 import 'package:toricar/authProvider.dart';
-import 'package:toricar/homePage.dart';
-import '4bMenuRemis.dart';
-import '4aMenuCliente.dart';
 import 'package:android_intent/android_intent.dart';
 
 //Screen para entrar como conductor o cliente
@@ -154,7 +152,7 @@ class _SelectModeState extends State<SelectMode> {
 
   void btnQuieroRemis() {
     //cuando no esta registrado que lo envie al sistema registro
-    Navigator.push(
+  /*  Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => estadosAuth == EstadosAuth.noRegistrado
@@ -167,7 +165,7 @@ class _SelectModeState extends State<SelectMode> {
                 auth: Auth(),
               ),
       ),
-    );
+    );*/
   }
    void btnQuieroTrabajar() {
     //cuando no esta registrado que lo envie al sistema registro
