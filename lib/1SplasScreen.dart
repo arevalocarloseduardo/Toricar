@@ -8,7 +8,7 @@ import 'package:toricar/4aMenuCliente.dart';
 import 'package:toricar/4bMenuRemis.dart';
 import 'package:toricar/auth.dart';
 
-class SplashScreen extends StatefulWidget {
+class   SplashScreen extends StatefulWidget {
   SplashScreen({this.auth});
   final BaseAuth auth;
 
@@ -64,8 +64,6 @@ animation.addListener((){
 });
  animationControllerCar=AnimationController(vsync: this,duration: Duration(milliseconds: 1000));
 animationCar=Tween<double>(begin: -420.0,end: 420.0).animate(animationControllerCar);
-
-
 
     _refCliente = Firestore.instance.collection('cliente');
     _refRemiseros = Firestore.instance.collection('remiseros');
@@ -179,7 +177,7 @@ animationCar=Tween<double>(begin: -420.0,end: 420.0).animate(animationController
                                     .map((doc) => dibujarContenido(doc, userId))
                                     .toList());
                           }
-                          return CircularProgressIndicator();
+                          return Center();
                         }),
                     StreamBuilder(
                         stream: _refCliente.snapshots(),
@@ -197,7 +195,7 @@ animationCar=Tween<double>(begin: -420.0,end: 420.0).animate(animationController
                                     .map((doc) => dibujarCliente(doc, userId))
                                     .toList());
                           }
-                          return CircularProgressIndicator();
+                          return Center();
                         }),
                   ],
                 ),

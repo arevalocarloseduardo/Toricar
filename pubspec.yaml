@@ -30,6 +30,8 @@ dependencies:
   fluttertoast: ^3.0.3
   flutter_swiper: ^1.1.4
   smooth_star_rating: ^1.0.1
+  image_picker: 
+  firebase_storage: ^2.0.1
   
 dev_dependencies:
   flutter_test:
